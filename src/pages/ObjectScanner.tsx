@@ -207,7 +207,7 @@ export const ObjectScanner: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-8">
+    <div className="max-w-4xl mx-auto py-6 px-4 md:py-12 md:px-8">
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-bold text-slate-900 mb-2">Object Scanner</h2>
         <p className="text-slate-500">Point your camera at any object to learn more about it.</p>
