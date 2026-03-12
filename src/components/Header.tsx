@@ -34,13 +34,13 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="h-16 px-8 flex items-center justify-between bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-900 relative z-40">
+    <header className="h-14 md:h-16 px-4 md:px-8 flex items-center justify-between bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-900 relative z-40">
       <div className="flex flex-col">
         <h1 className="text-sm font-bold text-slate-900 dark:text-white">SmartSight AI</h1>
+        <p className="text-xs text-slate-400 hidden md:block">Visual Learning Assistant</p>
       </div>
 
       <div className="flex items-center gap-1">
-        {/* Language Selector */}
         <div className="relative">
           <button 
             onClick={() => setShowLangMenu(!showLangMenu)}
@@ -83,7 +83,7 @@ export const Header: React.FC = () => {
           </button>
           
           {showNotifications && (
-            <div className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-4 z-50">
+            <div className="absolute top-full right-0 mt-2 w-72 md:w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-4 z-50">
               <h4 className="font-bold text-slate-900 dark:text-white mb-3">Notifications</h4>
               <div className="space-y-3">
                 <div className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl text-xs text-slate-600 dark:text-slate-300">
@@ -96,7 +96,7 @@ export const Header: React.FC = () => {
 
         <button 
           onClick={() => navigate('/settings')}
-          className="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hidden md:block"
         >
           <SettingsIcon size={20} />
         </button>
