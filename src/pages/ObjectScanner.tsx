@@ -207,13 +207,13 @@ export const ObjectScanner: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-8">
+    <div className="max-w-4xl mx-auto py-6 px-4 md:py-12 md:px-8">
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-bold text-slate-900 mb-2">Object Scanner</h2>
         <p className="text-slate-500">Point your camera at any object to learn more about it.</p>
       </div>
 
-      <div className="rounded-[2.5rem] overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl relative aspect-video flex items-center justify-center">
+      <div className={`overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl relative flex items-center justify-center ${isCameraOpen ? "fixed inset-0 z-50 rounded-none md:relative md:inset-auto md:rounded-[2.5rem] md:aspect-video" : "rounded-[2.5rem] aspect-video"}`}>
         {cameraError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-slate-900 z-10">
             <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-4">
@@ -250,7 +250,7 @@ export const ObjectScanner: React.FC = () => {
               playsInline 
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center gap-8">
+            <div className="absolute bottom-8 md:bottom-8 left-0 right-0 flex items-center justify-center gap-8" style={{bottom: "calc(env(safe-area-inset-bottom) + 2rem)"}}>
               <button 
                 onClick={toggleCamera}
                 className="w-12 h-12 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors backdrop-blur-sm"
