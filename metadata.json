@@ -1,0 +1,5 @@
+{
+  "name": "SmartSight AI",
+  "description": "A Real-Time Visual Learning Assistant using AI vision and OCR.",
+  "requestFramePermissions": ["camera"]
+}
