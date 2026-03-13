@@ -1,85 +1,139 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  Camera, 
-  FileText, 
-  MessageSquare, 
-  History, 
+import React, { useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  LayoutDashboard,
+  Camera,
+  FileText,
+  MessageSquare,
+  History,
   Settings,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 interface SidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: (value: boolean) => void;
+  isMobileOpen?: boolean;
+  setMobileOpen?: (value: boolean) => void;
+  className?: string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed }) => {
-  const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-    { icon: Camera, label: 'Scan Object', path: '/scan-object' },
-    { icon: FileText, label: 'Scan Notes', path: '/scan-notes' },
-    { icon: MessageSquare, label: 'AI Tutor', path: '/ai-tutor' },
-    { icon: History, label: 'History', path: '/history' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
-  ];
+const menuItems = [
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+  { icon: Camera, label: 'Scan Object', path: '/scan-object' },
+  { icon: FileText, label: 'Scan Notes', path: '/scan-notes' },
+  { icon: MessageSquare, label: 'AI Tutor', path: '/ai-tutor' },
+  { icon: History, label: 'History', path: '/history' },
+  { icon: Settings, label: 'Settings', path: '/settings' },
+];
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  isCollapsed,
+  setIsCollapsed,
+  isMobileOpen = false,
+  setMobileOpen,
+  className = ''
+}) => {
+  const sidebarRef = useRef<HTMLElement>(null);
+
+  // Trap focus inside sidebar when mobile open
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const el = sidebarRef.current;
+    if (!el) return;
+    const focusables = el.querySelectorAll<HTMLElement>(
+      'a, button, [tabindex]:not([tabindex="-1"])'
+    );
+    focusables[0]?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen?.(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileOpen, setMobileOpen]);
 
   return (
     <motion.aside
+      ref={sidebarRef}
       initial={false}
-      animate={{ width: isCollapsed ? 80 : 260 }}
-      className="h-screen bg-sidebar-bg text-white flex flex-col relative z-50 shrink-0"
+      animate={{ width: isCollapsed ? 72 : 256 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className={`h-screen bg-[var(--color-sidebar-bg)] text-white flex flex-col relative z-50 shrink-0 ${className}`}
+      role="navigation"
+      aria-label="Main navigation"
     >
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shrink-0">
-          <Sparkles size={24} className="text-white" />
+      {/* Logo */}
+      <div className="p-5 flex items-center gap-3 border-b border-white/5 shrink-0">
+        <div className="w-9 h-9 bg-[#6c47ff] rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-[#6c47ff]/30">
+          <Sparkles size={18} className="text-white" aria-hidden="true" />
         </div>
-        {!isCollapsed && (
-          <motion.span 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="font-bold text-xl tracking-tight"
-          >
-            SmartSight AI
-          </motion.span>
-        )}
+        <AnimatePresence>
+          {!isCollapsed && (
+            <motion.span
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8 }}
+              transition={{ duration: 0.15 }}
+              className="font-display font-800 text-lg tracking-tight leading-tight"
+            >
+              SmartSight<br />
+              <span className="text-[#6c47ff]">AI</span>
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2 mt-4">
+      {/* Nav links */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto" aria-label="Primary">
         {menuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => cn(
-              "sidebar-item",
-              isActive && "active",
-              isCollapsed && "justify-center px-0"
-            )}
+            end={item.path === '/'}
+            onClick={() => setMobileOpen?.(false)}
+            className={({ isActive }) =>
+              `sidebar-item${isActive ? ' active' : ''}`
+            }
+            title={isCollapsed ? item.label : undefined}
+            aria-label={item.label}
           >
-            <item.icon size={22} />
-            {!isCollapsed && <span>{item.label}</span>}
+            <item.icon size={20} aria-hidden="true" className="shrink-0" />
+            <AnimatePresence>
+              {!isCollapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.12 }}
+                >
+                  {item.label}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </NavLink>
         ))}
       </nav>
 
+      {/* Collapse toggle (desktop only) */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-20 bg-indigo-600 rounded-full p-1 text-white border-2 border-brand-bg hover:scale-110 transition-transform"
+        className="absolute -right-3 top-[72px] bg-[#6c47ff] rounded-full p-1 text-white border-2 border-[#0f0f11] hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-[#6c47ff] focus:ring-offset-2 focus:ring-offset-[#0f0f11]"
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-expanded={!isCollapsed}
       >
-        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        {isCollapsed ? <ChevronRight size={14} aria-hidden="true" /> : <ChevronLeft size={14} aria-hidden="true" />}
       </button>
 
-      <div className="p-4 mt-auto">
+      {/* Version */}
+      <div className="p-4 border-t border-white/5">
+        {!isCollapsed && (
+          <span className="text-[10px] text-white/20 font-display tracking-widest uppercase">v1.0.0</span>
+        )}
       </div>
     </motion.aside>
   );
