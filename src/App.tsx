@@ -1,5 +1,5 @@
-import React, { useState, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useEffect } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { MobileNav } from './components/MobileNav';
@@ -12,21 +12,11 @@ import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-// Page loading fallback
-const PageLoader = () => (
-  <div className="flex-1 flex items-center justify-center min-h-[60vh]" role="status" aria-label="Loading page">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-8 h-8 border-3 border-[#6c47ff]/20 border-t-[#6c47ff] rounded-full animate-spin" />
-      <span className="text-sm text-slate-400 font-display">Loading...</span>
-    </div>
-  </div>
-);
-
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { replace: true });
     }
@@ -42,7 +32,7 @@ const AppLayout: React.FC = () => {
   return (
     <ProtectedRoute>
       <div className="app-layout flex min-h-screen bg-brand-bg dark:bg-[#0a0a0c]">
-        {/* Desktop sidebar */}
+        {/* Desktop Sidebar */}
         <Sidebar
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
@@ -51,7 +41,7 @@ const AppLayout: React.FC = () => {
           className="desktop-sidebar"
         />
 
-        {/* Mobile overlay */}
+        {/* Mobile overlay backdrop */}
         {isMobileSidebarOpen && (
           <div
             className="sidebar-overlay active"
@@ -60,7 +50,7 @@ const AppLayout: React.FC = () => {
           />
         )}
 
-        {/* Main content */}
+        {/* Main area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <Header onMenuClick={() => setIsMobileSidebarOpen(true)} />
 
@@ -70,20 +60,18 @@ const AppLayout: React.FC = () => {
             role="main"
             tabIndex={-1}
           >
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/scan-object" element={<ObjectScanner />} />
-                <Route path="/scan-notes" element={<NotesScanner />} />
-                <Route path="/ai-tutor" element={<AITutor />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
-            </Suspense>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/scan-object" element={<ObjectScanner />} />
+              <Route path="/scan-notes" element={<NotesScanner />} />
+              <Route path="/ai-tutor" element={<AITutor />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
           </main>
         </div>
 
-        {/* Mobile bottom navigation */}
+        {/* Mobile bottom nav */}
         <MobileNav />
       </div>
     </ProtectedRoute>
@@ -94,7 +82,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        {/* Skip to main content link for accessibility */}
+        {/* Accessibility: skip to main content */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#6c47ff] focus:text-white focus:rounded-lg focus:font-semibold"
